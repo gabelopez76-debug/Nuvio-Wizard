@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Nuvio Setup</string>
+    <string name="nav_guide">Guide</string>
+    <string name="nav_accounts">Accounts</string>
+    <string name="nav_aiostreams">AIOStreams</string>
+    <string name="nav_aiometadata">AIOMetadata</string>
+    <string name="nav_deploy">Deploy</string>
+    <string name="cd_hero_banner">Nuvio home cinema streaming setup artwork</string>
+    <string name="cd_catalog_banner">AIOMetadata catalogs and collections artwork</string>
+    <string name="cd_copy">Copy to clipboard</string>
+    <string name="cd_open_browser">Open in browser</string>
+    <string name="cd_toggle_password">Toggle password visibility</string>
+    <string name="cd_move_up">Move catalog up</string>
+    <string name="cd_move_down">Move catalog down</string>
+    <string name="cd_delete_item">Delete item</string>
+    <string name="cd_back">Navigate back</string>
+    <string name="cd_toggle_progress_drawer">Toggle setup progress checklist</string>
+    <string name="cd_expand_milestone">Expand milestone checklist</string>
+    <string name="cd_expand_stepper_step">Expand or collapse configuration step</string>
+    <string name="cd_replay_celebration">Replay completion animation</string>
+    <string name="cd_design_collection_cover">Design collection picture</string>
+    <string name="cd_open_marketplace">Open compatible add-on marketplace</string>
+</resources>

@@ -1,0 +1,6 @@
+{
+  "name": "Nuvio Setup",
+  "description": "Guided setup companion for Nuvio with account setup, Real-Debrid and API key verification, single-config AIOStreams hub, and AIOMetadata catalog and collection builder.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

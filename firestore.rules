@@ -1,0 +1,223 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default-deny all reads and writes
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- GLOBAL PRIMITIVES ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isBoundedStringList(arr, maxLen) {
+      return arr is list && arr.size() <= maxLen && (arr.size() == 0 || arr[0] is string);
+    }
+
+    // --- VALIDATION BLUEPRINTS ---
+    function isValidProfile(data, userId) {
+      return data.userId == userId &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.profileName is string && data.profileName.size() >= 1 && data.profileName.size() <= 60 &&
+             data.activeProfile is bool &&
+             data.nuvioUsername is string && data.nuvioUsername.size() <= 80 &&
+             data.nuvioEmail is string && data.nuvioEmail.size() <= 120 &&
+             data.nuvioPasswordHint is string && data.nuvioPasswordHint.size() <= 120 &&
+             data.nuvioAccountCreated is bool &&
+             data.realDebridApiKey is string && data.realDebridApiKey.size() <= 200 &&
+             data.realDebridAccountReady is bool &&
+             data.realDebridVerified is bool &&
+             data.realDebridUserLabel is string && data.realDebridUserLabel.size() <= 100 &&
+             data.realDebridPremiumDays is int && data.realDebridPremiumDays >= 0 && data.realDebridPremiumDays <= 10000 &&
+             data.tmdbApiKey is string && data.tmdbApiKey.size() <= 300 &&
+             data.tmdbVerified is bool &&
+             data.mdblistApiKey is string && data.mdblistApiKey.size() <= 200 &&
+             data.rpdbApiKey is string && data.rpdbApiKey.size() <= 200 &&
+             data.aioStreamsInstanceUrl is string && data.aioStreamsInstanceUrl.size() <= 250 &&
+             data.aioStreamsPassword is string && data.aioStreamsPassword.size() <= 120 &&
+             isBoundedStringList(data.enabledAddons, 20) &&
+             isBoundedStringList(data.customStreamSources, 20) &&
+             isBoundedStringList(data.preferredResolutions, 10) &&
+             data.cachedOnly is bool &&
+             data.excludeCam is bool &&
+             data.preferDolbyVision is bool &&
+             data.maxFileSizeGb is int && data.maxFileSizeGb >= 1 && data.maxFileSizeGb <= 200 &&
+             data.formatterPreset in ['PRISM', 'MINIMALISTIC', 'DETAILED', 'GDRIVE'] &&
+             data.aioStreamsManifestUrl is string && data.aioStreamsManifestUrl.size() <= 500 &&
+             data.aioStreamsVerified is bool &&
+             data.aioMetadataInstanceUrl is string && data.aioMetadataInstanceUrl.size() <= 250 &&
+             data.movieProvider in ['TMDB', 'IMDb'] &&
+             data.seriesProvider in ['TMDB', 'TVDB'] &&
+             data.animeProvider in ['Kitsu', 'MAL', 'AniList'] &&
+             data.rpdbPostersEnabled is bool &&
+             data.animeCatalogsEnabled is bool &&
+             data.aioMetadataManifestUrl is string && data.aioMetadataManifestUrl.size() <= 500 &&
+             data.aioMetadataVerified is bool &&
+             data.nuvioMetaInstalled is bool &&
+             data.nuvioStreamsInstalled is bool &&
+             data.nuvioOrderVerified is bool &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidCatalog(data, userId) {
+      return data.userId == userId &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             isValidId(data.profileId) &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 80 &&
+             data.mediaType in ['Movies', 'Series', 'Anime', 'Mixed'] &&
+             data.itemKind in ['CATALOG', 'COLLECTION'] &&
+             data.sourceProvider in ['TMDB', 'MDBList', 'Trakt', 'Streaming', 'Curated'] &&
+             data.sourceReference is string && data.sourceReference.size() <= 300 &&
+             data.description is string && data.description.size() <= 240 &&
+             data.enabled is bool &&
+             data.sortOrder is int && data.sortOrder >= 0 && data.sortOrder <= 1000 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    // --- COLLECTION: /users/{userId}/profiles/{profileId} ---
+    match /users/{userId}/profiles/{profileId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(profileId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(profileId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'profileName', 'activeProfile',
+                         'nuvioUsername', 'nuvioEmail', 'nuvioPasswordHint', 'nuvioAccountCreated',
+                         'realDebridApiKey', 'realDebridAccountReady', 'realDebridVerified',
+                         'realDebridUserLabel', 'realDebridPremiumDays',
+                         'tmdbApiKey', 'tmdbVerified', 'mdblistApiKey', 'rpdbApiKey',
+                         'aioStreamsInstanceUrl', 'aioStreamsPassword',
+                         'enabledAddons', 'customStreamSources', 'preferredResolutions',
+                         'cachedOnly', 'excludeCam', 'preferDolbyVision',
+                         'maxFileSizeGb', 'formatterPreset', 'aioStreamsManifestUrl', 'aioStreamsVerified',
+                         'aioMetadataInstanceUrl', 'movieProvider', 'seriesProvider', 'animeProvider',
+                         'rpdbPostersEnabled', 'animeCatalogsEnabled',
+                         'aioMetadataManifestUrl', 'aioMetadataVerified',
+                         'nuvioMetaInstalled', 'nuvioStreamsInstalled', 'nuvioOrderVerified',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'profileName', 'activeProfile',
+                         'nuvioUsername', 'nuvioEmail', 'nuvioPasswordHint', 'nuvioAccountCreated',
+                         'realDebridApiKey', 'realDebridAccountReady', 'realDebridVerified',
+                         'realDebridUserLabel', 'realDebridPremiumDays',
+                         'tmdbApiKey', 'tmdbVerified', 'mdblistApiKey', 'rpdbApiKey',
+                         'aioStreamsInstanceUrl', 'aioStreamsPassword',
+                         'enabledAddons', 'customStreamSources', 'preferredResolutions',
+                         'cachedOnly', 'excludeCam', 'preferDolbyVision',
+                         'maxFileSizeGb', 'formatterPreset', 'aioStreamsManifestUrl', 'aioStreamsVerified',
+                         'aioMetadataInstanceUrl', 'movieProvider', 'seriesProvider', 'animeProvider',
+                         'rpdbPostersEnabled', 'animeCatalogsEnabled',
+                         'aioMetadataManifestUrl', 'aioMetadataVerified',
+                         'nuvioMetaInstalled', 'nuvioStreamsInstalled', 'nuvioOrderVerified',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidProfile(incoming(), userId);
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(profileId) &&
+                       isValidProfile(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         // Action: Update Profile Metadata & Selection
+                         incoming().diff(existing()).affectedKeys().hasOnly(['profileName', 'activeProfile', 'updatedAt']) ||
+                         // Action: Update Nuvio Account Credentials
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'nuvioUsername', 'nuvioEmail', 'nuvioPasswordHint', 'nuvioAccountCreated', 'updatedAt'
+                         ]) ||
+                         // Action: Update Real-Debrid & Metadata API Keys Vault
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'realDebridApiKey', 'realDebridAccountReady', 'realDebridVerified',
+                           'realDebridUserLabel', 'realDebridPremiumDays',
+                           'tmdbApiKey', 'tmdbVerified', 'mdblistApiKey', 'rpdbApiKey', 'updatedAt'
+                         ]) ||
+                         // Action: Update AIOStreams Single-Config Hub
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'aioStreamsInstanceUrl', 'aioStreamsPassword',
+                           'enabledAddons', 'customStreamSources', 'preferredResolutions',
+                           'cachedOnly', 'excludeCam', 'preferDolbyVision',
+                           'maxFileSizeGb', 'formatterPreset', 'aioStreamsManifestUrl', 'aioStreamsVerified', 'updatedAt'
+                         ]) ||
+                         // Action: Update AIOMetadata Settings
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'aioMetadataInstanceUrl', 'movieProvider', 'seriesProvider', 'animeProvider',
+                           'rpdbPostersEnabled', 'animeCatalogsEnabled',
+                           'aioMetadataManifestUrl', 'aioMetadataVerified', 'updatedAt'
+                         ]) ||
+                         // Action: Update Deploy Checklist
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'nuvioMetaInstalled', 'nuvioStreamsInstalled', 'nuvioOrderVerified', 'updatedAt'
+                         ])
+                       );
+
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(profileId);
+    }
+
+    // --- COLLECTION: /users/{userId}/catalogs/{catalogId} ---
+    match /users/{userId}/catalogs/{catalogId} {
+      allow get: if isOwner(userId) && isValidId(userId) && isValidId(catalogId);
+      allow list: if isOwner(userId);
+
+      allow create: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(catalogId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'profileId', 'title', 'mediaType', 'itemKind',
+                         'sourceProvider', 'sourceReference', 'description',
+                         'enabled', 'sortOrder', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'profileId', 'title', 'mediaType', 'itemKind',
+                         'sourceProvider', 'sourceReference', 'description',
+                         'enabled', 'sortOrder', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidCatalog(incoming(), userId) &&
+                       exists(/databases/$(database)/documents/users/$(userId)/profiles/$(incoming().profileId));
+
+      allow update: if isOwner(userId) &&
+                       isValidId(userId) &&
+                       isValidId(catalogId) &&
+                       isValidCatalog(incoming(), userId) &&
+                       incoming().userId == existing().userId &&
+                       incoming().profileId == existing().profileId &&
+                       incoming().createdAt == existing().createdAt &&
+                       (
+                         // Action: Edit Catalog / Collection Details
+                         incoming().diff(existing()).affectedKeys().hasOnly([
+                           'title', 'mediaType', 'itemKind', 'sourceProvider',
+                           'sourceReference', 'description', 'enabled', 'sortOrder', 'updatedAt'
+                         ]) ||
+                         // Action: Toggle Enabled or Reorder
+                         incoming().diff(existing()).affectedKeys().hasOnly(['enabled', 'updatedAt']) ||
+                         incoming().diff(existing()).affectedKeys().hasOnly(['sortOrder', 'updatedAt'])
+                       );
+
+      allow delete: if isOwner(userId) && isValidId(userId) && isValidId(catalogId);
+    }
+  }
+}

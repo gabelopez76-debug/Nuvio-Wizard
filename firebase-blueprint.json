@@ -1,0 +1,308 @@
+{
+  "entities": {
+    "SetupProfile": {
+      "title": "SetupProfile",
+      "description": "User-owned Nuvio configuration profile holding Nuvio account setup data, Real-Debrid and metadata API keys, unified AIOStreams stream hub settings, AIOMetadata provider settings, and deployment checklist state.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the profile owner."
+        },
+        "profileName": {
+          "type": "string",
+          "description": "Human-readable name for this configuration profile (e.g., Main Theater Setup)."
+        },
+        "activeProfile": {
+          "type": "boolean",
+          "description": "Whether this profile is currently selected as active for the user."
+        },
+        "nuvioUsername": {
+          "type": "string",
+          "description": "Desired or registered Nuvio username."
+        },
+        "nuvioEmail": {
+          "type": "string",
+          "description": "Email address associated with the Nuvio account."
+        },
+        "nuvioPasswordHint": {
+          "type": "string",
+          "description": "Nuvio account password/passphrase stored privately under the owner's Firestore scope for setup convenience."
+        },
+        "nuvioAccountCreated": {
+          "type": "boolean",
+          "description": "Whether the user has completed Nuvio account registration."
+        },
+        "realDebridApiKey": {
+          "type": "string",
+          "description": "Real-Debrid Secret API Key configured once and inherited by all AIOStreams add-ons."
+        },
+        "realDebridAccountReady": {
+          "type": "boolean",
+          "description": "Whether the user has created and activated a Real-Debrid account."
+        },
+        "realDebridVerified": {
+          "type": "boolean",
+          "description": "Whether the Real-Debrid API key passed live API verification."
+        },
+        "realDebridUserLabel": {
+          "type": "string",
+          "description": "Verified Real-Debrid username and account type label."
+        },
+        "realDebridPremiumDays": {
+          "type": "integer",
+          "description": "Remaining Real-Debrid premium days returned by live verification."
+        },
+        "tmdbApiKey": {
+          "type": "string",
+          "description": "The Movie Database (TMDB) API key for AIOMetadata."
+        },
+        "tmdbVerified": {
+          "type": "boolean",
+          "description": "Whether the TMDB API key passed live API verification."
+        },
+        "mdblistApiKey": {
+          "type": "string",
+          "description": "MDBList API key for importing custom watchlists and curated collections."
+        },
+        "rpdbApiKey": {
+          "type": "string",
+          "description": "Rating Poster Database (RPDB) API key for poster rating overlays."
+        },
+        "aioStreamsInstanceUrl": {
+          "type": "string",
+          "description": "Base URL of the AIOStreams host instance."
+        },
+        "aioStreamsPassword": {
+          "type": "string",
+          "description": "Encryption password created by the user for saving AIOStreams configuration."
+        },
+        "enabledAddons": {
+          "type": "array",
+          "description": "Enabled built-in AIOStreams add-on IDs inheriting the single master debrid config."
+        },
+        "customStreamSources": {
+          "type": "array",
+          "description": "User-added custom stream source URLs or IDs managed inside AIOStreams."
+        },
+        "preferredResolutions": {
+          "type": "array",
+          "description": "Preferred playback resolutions (e.g., 2160p, 1080p, 720p)."
+        },
+        "cachedOnly": {
+          "type": "boolean",
+          "description": "Restrict streams to instant Real-Debrid cached sources only."
+        },
+        "excludeCam": {
+          "type": "boolean",
+          "description": "Filter out CAM, TS, and low-quality screener releases."
+        },
+        "preferDolbyVision": {
+          "type": "boolean",
+          "description": "Prioritize Dolby Vision and HDR10+ releases."
+        },
+        "maxFileSizeGb": {
+          "type": "integer",
+          "description": "Maximum stream file size in gigabytes."
+        },
+        "formatterPreset": {
+          "type": "string",
+          "enum": ["PRISM", "MINIMALISTIC", "DETAILED", "GDRIVE"],
+          "description": "AIOStreams display formatter style."
+        },
+        "aioStreamsManifestUrl": {
+          "type": "string",
+          "description": "Generated AIOStreams manifest.json install URL."
+        },
+        "aioStreamsVerified": {
+          "type": "boolean",
+          "description": "Whether the AIOStreams manifest URL was live-verified over HTTP."
+        },
+        "aioMetadataInstanceUrl": {
+          "type": "string",
+          "description": "Base URL of the AIOMetadata host instance."
+        },
+        "movieProvider": {
+          "type": "string",
+          "enum": ["TMDB", "IMDb"],
+          "description": "Primary metadata provider for movies."
+        },
+        "seriesProvider": {
+          "type": "string",
+          "enum": ["TMDB", "TVDB"],
+          "description": "Primary metadata provider for series."
+        },
+        "animeProvider": {
+          "type": "string",
+          "enum": ["Kitsu", "MAL", "AniList"],
+          "description": "Primary metadata provider for anime."
+        },
+        "rpdbPostersEnabled": {
+          "type": "boolean",
+          "description": "Whether RPDB rating poster overlays are enabled in AIOMetadata."
+        },
+        "animeCatalogsEnabled": {
+          "type": "boolean",
+          "description": "Whether anime catalog rows are enabled in AIOMetadata."
+        },
+        "aioMetadataManifestUrl": {
+          "type": "string",
+          "description": "Generated AIOMetadata manifest.json install URL."
+        },
+        "aioMetadataVerified": {
+          "type": "boolean",
+          "description": "Whether the AIOMetadata manifest URL was live-verified over HTTP."
+        },
+        "nuvioMetaInstalled": {
+          "type": "boolean",
+          "description": "Checklist flag: AIOMetadata installed in Nuvio."
+        },
+        "nuvioStreamsInstalled": {
+          "type": "boolean",
+          "description": "Checklist flag: AIOStreams installed in Nuvio."
+        },
+        "nuvioOrderVerified": {
+          "type": "boolean",
+          "description": "Checklist flag: AIOMetadata placed above AIOStreams in Nuvio."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() upon creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on each update."
+        }
+      },
+      "required": [
+        "userId",
+        "profileName",
+        "activeProfile",
+        "nuvioUsername",
+        "nuvioEmail",
+        "nuvioPasswordHint",
+        "nuvioAccountCreated",
+        "realDebridApiKey",
+        "realDebridAccountReady",
+        "realDebridVerified",
+        "realDebridUserLabel",
+        "realDebridPremiumDays",
+        "tmdbApiKey",
+        "tmdbVerified",
+        "mdblistApiKey",
+        "rpdbApiKey",
+        "aioStreamsInstanceUrl",
+        "aioStreamsPassword",
+        "enabledAddons",
+        "customStreamSources",
+        "preferredResolutions",
+        "cachedOnly",
+        "excludeCam",
+        "preferDolbyVision",
+        "maxFileSizeGb",
+        "formatterPreset",
+        "aioStreamsManifestUrl",
+        "aioStreamsVerified",
+        "aioMetadataInstanceUrl",
+        "movieProvider",
+        "seriesProvider",
+        "animeProvider",
+        "rpdbPostersEnabled",
+        "animeCatalogsEnabled",
+        "aioMetadataManifestUrl",
+        "aioMetadataVerified",
+        "nuvioMetaInstalled",
+        "nuvioStreamsInstalled",
+        "nuvioOrderVerified",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CatalogCollection": {
+      "title": "CatalogCollection",
+      "description": "Custom media catalog or curated collection built for AIOMetadata and linked to a user's Nuvio setup profile.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the owner."
+        },
+        "profileId": {
+          "type": "string",
+          "description": "Document ID of the parent SetupProfile under the same user."
+        },
+        "title": {
+          "type": "string",
+          "description": "Display row title shown on the Nuvio home screen."
+        },
+        "mediaType": {
+          "type": "string",
+          "enum": ["Movies", "Series", "Anime", "Mixed"],
+          "description": "Content category for this catalog or collection."
+        },
+        "itemKind": {
+          "type": "string",
+          "enum": ["CATALOG", "COLLECTION"],
+          "description": "Whether this entry is a dynamic Catalog row or a curated Collection."
+        },
+        "sourceProvider": {
+          "type": "string",
+          "enum": ["TMDB", "MDBList", "Trakt", "Streaming", "Curated"],
+          "description": "Upstream metadata/list source provider."
+        },
+        "sourceReference": {
+          "type": "string",
+          "description": "Endpoint slug, MDBList URL/ID, Trakt list slug, or network identifier."
+        },
+        "description": {
+          "type": "string",
+          "description": "Short guidance or curation note for this row."
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this catalog/collection is included in the active AIOMetadata board."
+        },
+        "sortOrder": {
+          "type": "integer",
+          "description": "Zero-based display order on the Nuvio home screen."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() upon creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp set via FieldValue.serverTimestamp() on each update."
+        }
+      },
+      "required": [
+        "userId",
+        "profileId",
+        "title",
+        "mediaType",
+        "itemKind",
+        "sourceProvider",
+        "sourceReference",
+        "description",
+        "enabled",
+        "sortOrder",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/profiles/{profileId}": {
+      "schema": { "$ref": "#/entities/SetupProfile" },
+      "description": "Per-user isolated Nuvio setup profiles containing credentials, API keys, AIOStreams single-config settings, and AIOMetadata settings."
+    },
+    "/users/{userId}/catalogs/{catalogId}": {
+      "schema": { "$ref": "#/entities/CatalogCollection" },
+      "description": "Per-user isolated AIOMetadata catalogs and curated collections associated with a SetupProfile."
+    }
+  }
+}

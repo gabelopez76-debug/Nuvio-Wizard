@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="firestore_database_id" translatable="false">ai-studio-android-nuvioset-61a11c75-65a3-43d9-b1d2-e2039669de10</string>
+    <string name="recaptcha_site_key" translatable="false">6LdsiykuAAAAAPNekTjd-ZbJSJHEPCHha8vZArUo</string>
+</resources>
